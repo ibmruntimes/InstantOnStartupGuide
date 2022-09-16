@@ -107,5 +107,9 @@ RUN cd / \
  && mv jdk-17.0.5+2 semeruInstantOn \
  && rm -rf semeruInstantOn.tar.gz
 
-ENV JAVA_HOME=/criuDemos/semeruInstantOn
+ENV JAVA_HOME=/instantOnDemo/semeruInstantOn
 ENV PATH=$JAVA_HOME/bin:$PATH
+
+RUN cd instantOnDemo
+
+COPY --chown=1001:0 Samples/HelloInstantOn.java /instantOnDemo/HelloInstantOn.java

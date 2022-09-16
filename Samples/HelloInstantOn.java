@@ -12,15 +12,17 @@ public class HelloInstantOn {
 	public static void main(String args[]) throws Throwable {
 		System.out.println("Start");
 
+		System.out.println("Load and initialize classes");
 		for (int i = 0; i < 3; i++) {
 			System.out.print(".");
+			Thread.sleep(1000);
 		}
-		
-		System.out.println("Pre checkpoint");
+		System.out.println(".");
 
-		checkPointJVM("checkpointData");
+		//uncomment the line below
+		//checkPointJVM("checkpointData");
 
-		System.out.println("Post checkpoint");
+		System.out.println("Application ready!");
 	}
 
 	public static void checkPointJVM(String path) {
@@ -29,6 +31,8 @@ public class HelloInstantOn {
 					.setLeaveRunning(false)
 					.setShellJob(true)
 					.setFileLocks(true)
+					.setLogLevel(4)
+					.setLogFile("logs")
 					.checkpointJVM();
 		} else {
 			System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
