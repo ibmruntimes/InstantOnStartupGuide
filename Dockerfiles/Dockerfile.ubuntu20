@@ -1,0 +1,104 @@
+FROM ubuntu:20.04 AS base
+
+# Install required OS tools.
+
+RUN apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    software-properties-common \
+ && add-apt-repository ppa:ubuntu-toolchain-r/test \
+ && apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    ant \
+    ant-contrib \
+    autoconf \
+    build-essential \
+    ca-certificates \
+    cmake \
+    cpio \
+    curl \
+    file \
+    g++-7 \
+    gcc-7 \
+    gdb \
+    git \
+    libasound2-dev \
+    libcups2-dev \
+    libdwarf-dev \
+    libelf-dev \
+    libexpat1-dev \
+    libffi-dev \
+    libfontconfig \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libnuma-dev \
+    libssl-dev \
+    libx11-dev \
+    libxext-dev \
+    libxrandr-dev \
+    libxrender-dev \
+    libxt-dev \
+    libxtst-dev \
+    make \
+    nasm \
+    openssh-client \
+    openssh-server \
+    perl \
+    pkg-config \
+    ssh \
+    systemtap-sdt-dev \
+    unzip \
+    wget \
+    xvfb \
+    zip \
+    zlib1g-dev \
+    libnet1 \
+    libnl-3-200 \
+    libnftables1 \
+    libprotobuf-c1 \
+    python3-protobuf \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install prerequisites for CRIU build.
+FROM base AS criu-builder
+RUN apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    iptables \
+    libbsd-dev \
+    libcap-dev \
+    libnet1-dev \
+    libgnutls28-dev \
+    libgnutls30 \
+    libnftables-dev \
+    libnl-3-dev \
+    libprotobuf-c-dev \
+    libprotobuf-dev \
+    python3-distutils \
+    protobuf-c-compiler \
+    protobuf-compiler
+# Build CRIU from source.
+RUN cd /tmp \
+ && wget --progress=dot:mega -O criu.tar.gz https://github.com/checkpoint-restore/criu/archive/refs/tags/v3.16.1.tar.gz \
+ && tar -xzf criu.tar.gz \
+ && mv criu-3.16.1 criu-build \
+ && cd criu-build \
+ && make \
+ && make DESTDIR=/tmp/criu-3.16.1 install-lib install-criu \
+ && cd .. \
+ && rm -fr criu.tar.gz criu-build
+# Install CRIU.
+FROM base
+COPY --from=criu-builder /tmp/criu-3.16.1/usr/local /usr/local
+# Set CRIU capabilities.
+RUN setcap cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_admin,cap_sys_chroot,cap_sys_ptrace,cap_sys_admin,cap_sys_resource,cap_sys_time,cap_audit_control=eip /usr/local/sbin/criu
+
+# Get Semeru InstantOn
+RUN cd / \
+ && mkdir /criuDemos \
+ && cd criuDemos \
+ && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.5%2B2_august_22-preview_3/ibm-semeru-open-ea-jdk_x64_linux_17.0.5_2_august_22-preview_3.tar.gz \
+ && tar -xzf semeruInstantOn.tar.gz \
+ && mv jdk-17.0.5+2 semeruInstantOn \
+ && rm -rf semeruInstantOn.tar.gz
+
+ENV JAVA_HOME=/criuDemos/semeruInstantOn
+ENV PATH=$JAVA_HOME/bin:$PATH
