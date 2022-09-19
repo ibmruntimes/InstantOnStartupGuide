@@ -100,7 +100,7 @@ RUN apt-get update \
 
 # Build CRIU from source.
 RUN cd /tmp \
- && wget --progress=dot:mega -O criu.tar.gz https://github.com/checkpoint-restore/criu/archive/refs/tags/v3.16.1.tar.gz \
+ && wget --progress=dot:mega -O criu.tar.gz https://github.com/checkpoint-restore/criu/archive/refs/tags/v3.17.1.tar.gz \
  && tar -xzf criu.tar.gz \
  && mv criu-3.16.1 criu-build \
  && cd criu-build \
