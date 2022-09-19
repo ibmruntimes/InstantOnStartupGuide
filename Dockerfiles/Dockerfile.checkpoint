@@ -1,0 +1,18 @@
+FROM instantondemo:ub20
+
+USER root
+
+#create the chekpoint
+RUN cd /instantOnDemo \
+ && sed -i 's/\/\/checkPointJVM("checkpointData");/checkPointJVM("checkpointData");/g' HelloInstantOn.java \
+ && javac HelloInstantOn.java \
+ && mkdir checkpointData
+
+WORKDIR /instantOnDemo
+
+USER root
+
+#ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["/usr/bin/dumb-init", "--", "java", "-XX:+EnableCRIUSupport", "HelloInstantOn"]
+#CMD ["criu", "restore", "-D", "./checkpointData", "--shell-job"]
+#CMD ["bash", "restore.sh"]
