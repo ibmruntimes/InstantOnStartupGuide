@@ -1,0 +1,140 @@
+###############################################################################
+# Copyright 2022, IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+FROM ubuntu:20.04 AS base
+
+# Install required OS tools.
+
+RUN apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    software-properties-common \
+ && add-apt-repository ppa:ubuntu-toolchain-r/test \
+ && apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    ant \
+    ant-contrib \
+    autoconf \
+    build-essential \
+    ca-certificates \
+    cmake \
+    cpio \
+    curl \
+    dumb-init \
+    file \
+    g++-7 \
+    gcc-7 \
+    gdb \
+    git \
+    libbsd0 \
+    libnftables1 \
+    libnl-3-200 \
+    libnet1 \
+    libasound2-dev \
+    libcups2-dev \
+    libdwarf-dev \
+    libelf-dev \
+    libexpat1-dev \
+    libffi-dev \
+    libfontconfig \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libnuma-dev \
+    libssl-dev \
+    libx11-dev \
+    libxext-dev \
+    libxrandr-dev \
+    libxrender-dev \
+    libxt-dev \
+    libxtst-dev \
+    make \
+    nasm \
+    openssh-client \
+    openssh-server \
+    perl \
+    pkg-config \
+    ssh \
+    systemtap-sdt-dev \
+    unzip \
+    wget \
+    xvfb \
+    zip \
+    zlib1g-dev \
+    libnet1 \
+    libnl-3-200 \
+    libnftables1 \
+    libprotobuf-c1 \
+    python3-protobuf \
+    vim \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install prerequisites for CRIU build.
+FROM base AS criu-builder
+RUN apt-get update \
+ && apt-get install -qq -y --no-install-recommends \
+    iptables \
+    libbsd-dev \
+    libcap-dev \
+    libnet1-dev \
+    libgnutls28-dev \
+    libgnutls30 \
+    libnftables-dev \
+    libnl-3-dev \
+    libprotobuf-c-dev \
+    libprotobuf-dev \
+    python3-distutils \
+    protobuf-c-compiler \
+    protobuf-compiler
+
+# Build CRIU from source.
+RUN cd /tmp \
+ && git clone https://github.com/ymanton/criu.git \
+ && cd criu \
+ && git checkout test-rootless \
+ && make \
+ && make DESTDIR=/tmp/criu-3.16.1 install-lib install-criu \
+ && cd .. \
+ && rm -fr criu
+
+# Install CRIU.
+FROM base
+COPY --from=criu-builder /tmp/criu-3.16.1/usr/local /usr/local
+# Set CRIU capabilities.
+RUN setcap cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_admin,cap_sys_chroot,cap_sys_ptrace,cap_sys_admin,cap_sys_resource,cap_sys_time,cap_audit_control=eip /usr/local/sbin/criu
+#RUN setcap cap_checkpoint_restore,cap_sys_ptrace,cap_net_admin=eip /usr/local/sbin/criu
+
+# Run ldconfig to discover newly installed shared libraries.
+RUN for dir in lib lib64 lib/x86_64-linux-gnu ; do echo /usr/local/$dir ; done > /etc/ld.so.conf.d/usr-local.conf \
+ && ldconfig
+
+# Get Semeru InstantOn
+RUN cd / \
+ && mkdir -p /instantOnDemo/Scripts \
+ && chown -R 1001:0 /instantOnDemo \
+ && cd instantOnDemo \
+ && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.5%2B2_august_22-preview_3/ibm-semeru-open-ea-jdk_x64_linux_17.0.5_2_august_22-preview_3.tar.gz \
+ && tar -xzf semeruInstantOn.tar.gz \
+ && mv jdk-17.0.5+2 semeruInstantOn \
+ && rm -rf semeruInstantOn.tar.gz
+
+ENV JAVA_HOME=/instantOnDemo/semeruInstantOn
+ENV PATH=$JAVA_HOME/bin:/instantOnDemo:$PATH
+
+WORKDIR /instantOnDemo
+
+COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
+COPY --chown=1001:0 Scripts/unprivileged/* /instantOnDemo/Scripts/
+COPY --chown=1001:0 Samples/HelloInstantOn.java /instantOnDemo/HelloInstantOn.java
+RUN chmod a+rx /instantOnDemo/Scripts/*

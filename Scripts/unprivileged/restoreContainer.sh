@@ -16,9 +16,5 @@
 # limitations under the License.
 ###############################################################################
 
-docker build -f Dockerfiles/Dockerfile.ubuntu20 -t instantondemo:ub20 .
-docker build -f Dockerfiles/Dockerfile.checkpoint -t instantoncheckpoint:ub20 .
-docker run --name checkpointrun --cap-add=ALL --privileged -it instantoncheckpoint:ub20
-docker wait checkpointrun
-docker commit checkpointrun restorerun
-docker rm checkpointrun
+docker run --rm --cap-add=ALL -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --security-opt "apparmor=criu_apparmor" -it restorerun 
+#docker run --rm --cap-add=CHECKPOINT_RESTORE --cap-add=SYS_PTRACE --cap-add=NET_ADMIN -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --security-opt "apparmor=criu_apparmor" -it restorerun 
