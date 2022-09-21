@@ -16,4 +16,4 @@
 # limitations under the License.
 ###############################################################################
 
-docker run --rm --cap-add=ALL --privileged -it restorerun criu restore -D ./checkpointData --shell-job -v4 --log-file=restore.log
+docker run --rm --cap-add=ALL --privileged -it restorerun 

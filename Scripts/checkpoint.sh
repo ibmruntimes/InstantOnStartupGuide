@@ -16,6 +16,13 @@
 # limitations under the License.
 ###############################################################################
 
+# hack to bump up the pid by 100
+for i in {1..100}
+do
+    ./Scripts/pidplus.sh
+done
+
+mkdir checkpointData
 java -XX:+EnableCRIUSupport HelloInstantOn
 
 exit 0

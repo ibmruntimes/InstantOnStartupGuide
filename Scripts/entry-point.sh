@@ -16,9 +16,10 @@
 # limitations under the License.
 ###############################################################################
 
-docker build -f Dockerfiles/Dockerfile.ubuntu20 -t instantondemo:ub20 .
-docker build -f Dockerfiles/Dockerfile.checkpoint -t instantoncheckpoint:ub20 .
-docker run --name checkpointrun --cap-add=ALL --privileged -it instantoncheckpoint:ub20
-docker wait checkpointrun
-docker commit checkpointrun restorerun
-docker rm checkpointrun
+if [ -d "./checkpointData" ]; then
+  exec dumb-init --rewrite 15:2 -- "./Scripts/restore.sh"
+else
+  ./Scripts/checkpoint.sh
+fi
+
+
