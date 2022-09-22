@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-criu
+  namespace: criu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: my-app-criu
+  template:
+    metadata:
+      labels:
+        name: my-app-criu
+    spec:
+      serviceAccount: criusvcacct
+      serviceAccountName: criusvcacct
+      containers:
+        - name: my-app-criu
+          image: <TAG>
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /proc/sys/kernel/ns_last_pid
+            name: ns-last-pid-mount
+          securityContext:
+            capabilities:
+              add: [ "SYS_TIME", "DAC_OVERRIDE", "CHOWN", "SETPCAP", "SETGID", "AUDIT_CONTROL", "DAC_READ_SEARCH", "NET_ADMIN", "SYS_CHROOT", "SYS_PTRACE", "FOWNER", "KILL", "FSETID", "SYS_RESOURCE", "SETUID", "SYS_ADMIN" ]
+      volumes:
+      - name: ns-last-pid-mount
+        hostPath:
+          path: /proc/sys/kernel/ns_last_pid
+          type: File
+
