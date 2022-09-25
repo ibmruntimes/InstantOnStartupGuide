@@ -17,27 +17,27 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
 import org.eclipse.openj9.criu.CRIUSupport;
 
-public class HelloInstantOn {
-
+public class RandomValues {
+	
 	public static void main(String args[]) throws Throwable {
-		System.out.println("Start");
-
-		System.out.println("Load and initialize classes");
-		for (int i = 0; i < 3; i++) {
-			System.out.print(".");
-			Thread.sleep(1000);
-		}
-		System.out.println(".");
-
+		System.out.println("Generate random numbers");
+		Random rand = new Random();
+		System.out.println("random val: " + rand.nextInt());
+		
 		//uncomment the line below
 		//checkPointJVM("checkpointData");
 
-		System.out.println("Application ready!");
+		System.out.println("random val: " + rand.nextInt());
+		System.out.println("random val: " + rand.nextInt());
+		System.out.println("random val: " + rand.nextInt());
+		System.out.println("random val: " + rand.nextInt());
+		System.out.println("random val: " + rand.nextInt());
 	}
 
 	public static void checkPointJVM(String path) {

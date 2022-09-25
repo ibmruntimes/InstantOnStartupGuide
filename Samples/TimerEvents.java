@@ -17,27 +17,36 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
 import org.eclipse.openj9.criu.CRIUSupport;
 
-public class HelloInstantOn {
-
+public class TimerEvents {
+	public static final long SECOND = 1000000000;
+	public static final long SECOND_IN_MILLIS = 1000;
+	public static final long TEN_SECONDS = 10 * SECOND;
+	public static final long FIVE_SECONDS = 5 * SECOND;
+	
 	public static void main(String args[]) throws Throwable {
-		System.out.println("Start");
-
-		System.out.println("Load and initialize classes");
-		for (int i = 0; i < 3; i++) {
-			System.out.print(".");
-			Thread.sleep(1000);
+		System.out.println("Start 10 event timers");
+		
+		final long start = System.nanoTime();
+		boolean checkpointTaken = false;
+		for (int i = 0; i < 10; i++) {
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+				public void run() {
+					System.out.println("Event fired!");
+				}
+			}, 0, 10 * SECOND_IN_MILLIS);
+			Thread.sleep(SECOND_IN_MILLIS);
 		}
-		System.out.println(".");
-
 		//uncomment the line below
 		//checkPointJVM("checkpointData");
-
-		System.out.println("Application ready!");
+		
 	}
 
 	public static void checkPointJVM(String path) {

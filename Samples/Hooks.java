@@ -22,22 +22,17 @@ import java.io.File;
 import java.io.*;
 import org.eclipse.openj9.criu.CRIUSupport;
 
-public class HelloInstantOn {
+public class Hooks {
 
 	public static void main(String args[]) throws Throwable {
 		System.out.println("Start");
 
-		System.out.println("Load and initialize classes");
-		for (int i = 0; i < 3; i++) {
-			System.out.print(".");
-			Thread.sleep(1000);
-		}
-		System.out.println(".");
+		System.out.println("Pre-checkpoint");
 
 		//uncomment the line below
 		//checkPointJVM("checkpointData");
 
-		System.out.println("Application ready!");
+		System.out.println("Post-checkpoint");
 	}
 
 	public static void checkPointJVM(String path) {
@@ -48,6 +43,8 @@ public class HelloInstantOn {
 					.setFileLocks(true)
 					.setLogLevel(4)
 					.setLogFile("logs")
+					.registerPreSnapshotHook(()->System.out.println("Pre checkpoint hook!"))
+					.registerPostRestoreHook(()->System.out.println("Post restore hook!"))
 					.checkpointJVM();
 		} else {
 			System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
