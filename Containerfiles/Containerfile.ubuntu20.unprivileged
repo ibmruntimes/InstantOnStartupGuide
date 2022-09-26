@@ -14,7 +14,10 @@
 # limitations under the License.
 ###############################################################################
 
-FROM ubuntu:20.04 AS base
+FROM ubuntu:22.04 AS base
+
+RUN apt-get update \
+ && apt-get install -qq -y --no-install-recommends gpg gpg-agent
 
 # Install required OS tools.
 
@@ -34,8 +37,8 @@ RUN apt-get update \
     curl \
     dumb-init \
     file \
-    g++-7 \
-    gcc-7 \
+    g++ \
+    gcc \
     gdb \
     git \
     libbsd0 \
@@ -102,7 +105,7 @@ RUN apt-get update \
 RUN cd /tmp \
  && git clone https://github.com/ymanton/criu.git \
  && cd criu \
- && git checkout test-rootless \
+ && git checkout instant-on-v3.16.1 \
  && make \
  && make DESTDIR=/tmp/criu-3.16.1 install-lib install-criu \
  && cd .. \
@@ -112,8 +115,7 @@ RUN cd /tmp \
 FROM base
 COPY --from=criu-builder /tmp/criu-3.16.1/usr/local /usr/local
 # Set CRIU capabilities.
-RUN setcap cap_chown,cap_dac_override,cap_dac_read_search,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_admin,cap_sys_chroot,cap_sys_ptrace,cap_sys_admin,cap_sys_resource,cap_sys_time,cap_audit_control=eip /usr/local/sbin/criu
-#RUN setcap cap_checkpoint_restore,cap_sys_ptrace,cap_net_admin=eip /usr/local/sbin/criu
+RUN setcap cap_checkpoint_restore,cap_sys_ptrace,cap_net_admin=eip /usr/local/sbin/criu
 
 # Run ldconfig to discover newly installed shared libraries.
 RUN for dir in lib lib64 lib/x86_64-linux-gnu ; do echo /usr/local/$dir ; done > /etc/ld.so.conf.d/usr-local.conf \

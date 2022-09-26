@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ###############################################################################
 # Copyright 2022, IBM Corp.
 #
@@ -15,6 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+FROM instantondemo:ub22
 
-podman run --rm --cap-add=CHECKPOINT_RESTORE --cap-add=SYS_PTRACE --cap-add=NET_ADMIN -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --name restore_run restorerun
+USER 1001
+
+#create the chekpoint
+RUN cd /instantOnDemo \
+ && sed -i 's/\/\/checkPointJVM("checkpointData");/checkPointJVM("checkpointData");/g' HelloInstantOn.java \
+ && sed -i 's/.setLogFile("logs")/.setLogFile("logs").setUnprivileged(true)/g' HelloInstantOn.java \
+ && javac HelloInstantOn.java
+
+WORKDIR /instantOnDemo
+
+ENTRYPOINT ["./Scripts/entry-point.sh"]
 
