@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
 import org.eclipse.openj9.criu.CRIUSupport;
+import java.util.Properties;
 
 public class HelloInstantOn {
 
@@ -38,6 +39,13 @@ public class HelloInstantOn {
 		//checkPointJVM("checkpointData");
 
 		System.out.println("Application ready!");
+
+		if (null != System.getProperty("helloinstanton_heartbeat")) {
+			while (true) {
+				System.out.println("Heartbeat");
+				Thread.sleep(2000);
+			}
+		}
 	}
 
 	public static void checkPointJVM(String path) {

@@ -16,5 +16,13 @@
 # limitations under the License.
 ###############################################################################
 
-podman run --rm --cap-add=CHECKPOINT_RESTORE --cap-add=SYS_PTRACE --cap-add=NET_ADMIN -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --name restore_run restorerun
+# hack to bump up the pid by 100
+for i in {1..100}
+do
+    ./Scripts/pidplus.sh
+done
 
+mkdir checkpointData
+java -XX:+EnableCRIUSupport -Dhelloinstanton_heartbeat="true" HelloInstantOn 1>out 2>/dev/null </dev/null
+
+exit 0
