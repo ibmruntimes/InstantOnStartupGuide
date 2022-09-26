@@ -16,5 +16,4 @@
 # limitations under the License.
 ###############################################################################
 
-docker run --rm --cap-add=ALL -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --security-opt "apparmor=criu_apparmor" -it restorerun 
-#docker run --rm --cap-add=CHECKPOINT_RESTORE --cap-add=SYS_PTRACE --cap-add=NET_ADMIN -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --security-opt "apparmor=criu_apparmor" -it restorerun 
+docker run --rm --cap-add=ALL -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --security-opt "apparmor=criu_apparmor" -it --name restore_run restorerun 

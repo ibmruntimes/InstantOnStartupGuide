@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ###############################################################################
 # Copyright 2022, IBM Corp.
 #
@@ -15,10 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+FROM instantondemo:ubi8
 
-docker build -f Containerfiles/Containerfile.ubuntu20.privileged -t instantondemo:ub20 . || exit 1
-docker build -f Containerfiles/Containerfile.ubuntu20.checkpoint -t instantoncheckpoint:ub20 . || exit 1
-docker run --name checkpointrun --privileged -it instantoncheckpoint:ub20 || exit 1
-docker wait checkpointrun || exit 1
-docker commit checkpointrun restorerun || exit 1
-docker rm checkpointrun || exit 1
+USER root
+
+#create the chekpoint
+RUN cd /instantOnDemo \
+ && sed -i 's/\/\/checkPointJVM("checkpointData");/checkPointJVM("checkpointData");/g' HelloInstantOn.java \
+ && javac HelloInstantOn.java
+
+WORKDIR /instantOnDemo
+
+USER root
+
+ENTRYPOINT ["./Scripts/entry-point.sh"]
+
