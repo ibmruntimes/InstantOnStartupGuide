@@ -16,9 +16,9 @@
 # limitations under the License.
 ###############################################################################
 
-docker build -f Containerfiles/Containerfile.ubi8.privileged -t instantondemo:ubi8 . || exit 1
-docker build -f Containerfiles/Containerfile.ubi8.checkpoint.privileged -t instantoncheckpoint:ubi8 . || exit 1
-docker run --name checkpointrun --privileged -it instantoncheckpoint:ubi8 || exit 1
-docker wait checkpointrun || exit 1
-docker commit checkpointrun restorerun || exit 1
-docker rm checkpointrun || exit 1
+podman build -f Containerfiles/Containerfile.ubi8.privileged -t instantondemo:ubi8 . || exit 1
+podman build -f Containerfiles/Containerfile.ubi8.checkpoint.privileged -t instantoncheckpoint:ubi8 . || exit 1
+podman run --name checkpointrun --privileged -it instantoncheckpoint:ubi8 || exit 1
+podman wait checkpointrun || exit 1
+podman commit checkpointrun restorerun || exit 1
+podman rm checkpointrun || exit 1

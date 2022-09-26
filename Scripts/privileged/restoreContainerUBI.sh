@@ -16,4 +16,4 @@
 # limitations under the License.
 ###############################################################################
 
-docker run --rm --privileged -it --name restore_run restorerun 
+podman run --rm --privileged -it --name restore_run restorerun 
