@@ -16,8 +16,8 @@
 # limitations under the License.
 ###############################################################################
 
-docker build -f Dockerfiles/Dockerfile.ubuntu20.privileged -t instantondemo:ub20 .
-docker build -f Dockerfiles/Dockerfile.checkpoint -t instantoncheckpoint:ub20 .
+docker build -f Containerfiles/Containerfile.ubuntu20.privileged -t instantondemo:ub20 .
+docker build -f Containerfiles/Containerfile.checkpoint -t instantoncheckpoint:ub20 .
 docker run --name checkpointrun --privileged -it instantoncheckpoint:ub20
 docker wait checkpointrun
 docker commit checkpointrun restorerun
