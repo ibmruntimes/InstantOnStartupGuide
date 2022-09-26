@@ -136,5 +136,5 @@ WORKDIR /instantOnDemo
 
 COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Scripts/unprivileged/* /instantOnDemo/Scripts/
-COPY --chown=1001:0 Samples/HelloInstantOn.java /instantOnDemo/HelloInstantOn.java
+COPY --chown=1001:0 Samples/* /instantOnDemo/
 RUN chmod a+rx /instantOnDemo/Scripts/*
