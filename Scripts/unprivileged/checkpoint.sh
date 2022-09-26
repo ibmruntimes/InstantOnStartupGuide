@@ -23,6 +23,6 @@ do
 done
 
 mkdir checkpointData
-java -XX:+EnableCRIUSupport HelloInstantOn 1>out 2>/dev/null </dev/null
+java -XX:+EnableCRIUSupport -Dhelloinstanton_heartbeat="true" HelloInstantOn 1>out 2>/dev/null </dev/null
 
 exit 0
