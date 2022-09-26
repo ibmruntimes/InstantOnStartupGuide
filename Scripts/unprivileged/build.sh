@@ -17,7 +17,7 @@
 ###############################################################################
 
 docker build -f Containerfiles/Containerfile.ubuntu20.unprivileged -t instantondemo:ub20 . || exit 1
-docker build -f Containerfiles/Containerfile.checkpoint -t instantoncheckpoint:ub20 . || exit 1
+docker build -f Containerfiles/Containerfile.ubuntu20.checkpoint -t instantoncheckpoint:ub20 . || exit 1
 docker run --name checkpointrun --privileged -it instantoncheckpoint:ub20 || exit 1
 docker wait checkpointrun || exit 1
 docker commit checkpointrun restorerun || exit 1
