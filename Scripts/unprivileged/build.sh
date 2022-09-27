@@ -16,8 +16,8 @@
 # limitations under the License.
 ###############################################################################
 
-podman build -f Containerfiles/Containerfile.ubuntu20.unprivileged -t instantondemo:ub22 . || exit 1
-podman build -f Containerfiles/Containerfile.ubuntu20.checkpoint.unprivileged -t instantoncheckpoint:ub22 . || exit 1
+podman build -f Containerfiles/Containerfile.ubuntu22.unprivileged -t instantondemo:ub22 . || exit 1
+podman build -f Containerfiles/Containerfile.ubuntu22.checkpoint.unprivileged -t instantoncheckpoint:ub22 . || exit 1
 podman run --name checkpointrun --privileged -it instantoncheckpoint:ub22 || exit 1
 podman wait checkpointrun || exit 1
 podman commit checkpointrun restorerun || exit 1
