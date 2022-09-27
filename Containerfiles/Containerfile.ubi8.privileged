@@ -20,7 +20,7 @@ RUN set -eu; \
 # CRIU dependencies
        criu criu-libs iptables-libs jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
 # Semeru dependencies
-       tzdata openssl wget ca-certificates fontconfig glibc-langpack-en tar; \
+       tzdata openssl wget ca-certificates fontconfig glibc-langpack-en tar vim; \
     dnf clean all; \
     useradd -u 1001 -r -g 0 -s /usr/sbin/nologin default;
 
