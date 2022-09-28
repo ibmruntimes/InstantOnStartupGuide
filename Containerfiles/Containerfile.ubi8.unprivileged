@@ -24,3 +24,5 @@ COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Scripts/unprivileged/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Samples/* /instantOnDemo/
 RUN chmod a+rx /instantOnDemo/Scripts/*
+
+CMD [ "/bin/bash" ]
