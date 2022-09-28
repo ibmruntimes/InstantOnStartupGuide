@@ -1,5 +1,3 @@
-#!/bin/sh
-
 ###############################################################################
 # Copyright 2022, IBM Corp.
 #
@@ -15,10 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+FROM instantondemo:ubi8
 
-podman build -f Containerfiles/Containerfile.ubuntu22.unprivileged -t instantondemo:ub22 . || exit 1
-podman build -f Containerfiles/Containerfile.ubuntu22.checkpoint.unprivileged -t instantoncheckpoint:ub22 . || exit 1
-podman run --name checkpointrun --privileged -it instantoncheckpoint:ub22 || exit 1
-podman wait checkpointrun || exit 1
-podman commit checkpointrun restorerun || exit 1
-podman rm checkpointrun || exit 1
+USER 1001
+
+#create the chekpoint
+RUN cd /instantOnDemo \
+ && sed -i 's/\/\/checkPointJVM("checkpointData");/checkPointJVM("checkpointData");/g' HelloInstantOn.java \
+ && sed -i 's/.setLogFile("logs")/.setLogFile("logs").setUnprivileged(true)/g' HelloInstantOn.java \
+ && javac HelloInstantOn.java
+
+WORKDIR /instantOnDemo
+
+ENTRYPOINT ["./Scripts/entry-point.sh"]
+

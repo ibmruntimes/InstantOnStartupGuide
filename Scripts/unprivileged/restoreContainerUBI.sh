@@ -16,9 +16,5 @@
 # limitations under the License.
 ###############################################################################
 
-podman build -f Containerfiles/Containerfile.ubuntu22.unprivileged -t instantondemo:ub22 . || exit 1
-podman build -f Containerfiles/Containerfile.ubuntu22.checkpoint.unprivileged -t instantoncheckpoint:ub22 . || exit 1
-podman run --name checkpointrun --privileged -it instantoncheckpoint:ub22 || exit 1
-podman wait checkpointrun || exit 1
-podman commit checkpointrun restorerun || exit 1
-podman rm checkpointrun || exit 1
+podman run --rm --cap-add=CHECKPOINT_RESTORE --cap-add=SYS_PTRACE --cap-add=NET_ADMIN -v /proc/sys/kernel/ns_last_pid:/proc/sys/kernel/ns_last_pid --security-opt seccomp=criuseccompprofile.json --name restore_run restorerun
+
