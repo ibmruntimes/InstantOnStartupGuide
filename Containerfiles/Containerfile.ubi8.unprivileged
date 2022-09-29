@@ -1,4 +1,4 @@
-FROM icr.io/appcafe/open-liberty:beta-instanton-java17-openj9-ubi
+FROM icr.io/appcafe/open-liberty:beta-instanton
 
 USER 0
 
