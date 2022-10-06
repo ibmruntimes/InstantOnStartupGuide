@@ -16,6 +16,6 @@
 # limitations under the License.
 ###############################################################################
 
-criu restore -D ./checkpointData --shell-job -v4 --log-file=restore.log
+criu restore -D ./checkpointData --shell-job -v4 --log-file=restore.log --skip-file-rwx-check
 
 exit 0
