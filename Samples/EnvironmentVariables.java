@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright 2022, IBM Corp.
  *
@@ -18,35 +17,19 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
 
-
-public class ElapsedTime {
-	public static final long SECOND = 1000000000;
-	public static final long TEN_SECONDS = 10 * SECOND;
-	public static final long FIVE_SECONDS = 5 * SECOND;
-
+public class EnvironmentVariables {
+	
 	public static void main(String args[]) throws Throwable {
-		System.out.println("Spin for 10 seconds");
-
-		final long start = System.nanoTime();
-		int sleeps = 0;
-		boolean checkpointTaken = false;
-
-		while ((System.nanoTime() - start) < (TEN_SECONDS + 0.1 * SECOND)) {
-			Thread.sleep(1000);
-			sleeps++;
-			System.out.print(".");
-			if (!checkpointTaken && ((System.nanoTime() - start) > FIVE_SECONDS)) {
-				// uncomment the lines below
-				// Utils.checkPointJVM("checkpointData");
-				// checkpointTaken = true;
-			}
-		}
-		System.out.println();
-
-		System.out.println("Total number of sleeps " + sleeps);
+		System.out.println("Print environment variables");
+		
+		//uncomment the line below
+		//Utils.checkPointJVM("checkpointData", "envFile");
+		
+		System.getenv().forEach((key, value)->System.out.println(key + " : " + value));
 	}
 }

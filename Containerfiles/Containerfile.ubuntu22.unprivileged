@@ -79,6 +79,7 @@ RUN apt-get update \
     libnl-3-200 \
     libnftables1 \
     libprotobuf-c1 \
+    libprotobuf-c-dev \
     python3-protobuf \
     vim \
  && rm -rf /var/lib/apt/lists/*
@@ -86,7 +87,7 @@ RUN apt-get update \
 # Install prerequisites for CRIU build.
 FROM base AS criu-builder
 RUN apt-get update \
- && apt-get install -qq -y --no-install-recommends \
+ && apt-get install -qq -y \
     iptables \
     libbsd-dev \
     libcap-dev \
@@ -95,7 +96,6 @@ RUN apt-get update \
     libgnutls30 \
     libnftables-dev \
     libnl-3-dev \
-    libprotobuf-c-dev \
     libprotobuf-dev \
     python3-distutils \
     protobuf-c-compiler \
@@ -124,6 +124,7 @@ RUN for dir in lib lib64 lib/x86_64-linux-gnu ; do echo /usr/local/$dir ; done >
 # Get Semeru InstantOn
 RUN cd / \
  && mkdir -p /instantOnDemo/Scripts \
+ && mkdir /instantOnDemo/CRIUNatives \
  && chown -R 1001:0 /instantOnDemo \
  && cd instantOnDemo \
  && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.5%2B2_august_22-preview_3/ibm-semeru-open-ea-jdk_x64_linux_17.0.5_2_august_22-preview_3.tar.gz \
@@ -139,4 +140,14 @@ WORKDIR /instantOnDemo
 COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Scripts/unprivileged/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Samples/* /instantOnDemo/
+COPY --chown=1001:0 CRIUNatives/* /instantOnDemo/CRIUNatives/
 RUN chmod a+rx /instantOnDemo/Scripts/*
+
+#compile CRIU natives lib
+RUN cd /instantOnDemo/CRIUNatives \
+ && gcc -c -std=c99 -fPIC -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux -D_POSIX_C_SOURCE=200809L -Wall -O0 -g3 CRIUNatives.c \
+ && gcc -shared -o libcriunatives.so CRIUNatives.o -L/usr/local/lib/x86_64-linux-gnu -lcriu -Wl,-rpath=/usr/lib/x86_64-linux-gnu \
+ && javac com/demo/CRIUNatives.java \
+ && jar --create --file criunatives.jar * \
+ && mv criunatives.jar .. \
+ && mv libcriunatives.so .. 
