@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright 2022, IBM Corp.
  *
@@ -14,41 +15,32 @@
  * limitations under the License.
  *******************************************************************************/
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.io.PrintStream;
-import java.io.File;
-import java.io.*;
 import org.eclipse.openj9.criu.CRIUSupport;
+import com.demo.CRIUNatives;
 
-public class Hooks {
-
-	public static void main(String args[]) throws Throwable {
-		System.out.println("Start");
-
-		System.out.println("Pre-checkpoint");
-
-		//uncomment the line below
-		//Utils.checkPointJVM("checkpointData");
-
-		System.out.println("Post-checkpoint");
+public class Utils {
+	public static void checkPointJVM(String path) {
+		checkPointJVM(path, null);
 	}
 
-	public static void checkPointJVM(String path) {
+	public static void checkPointJVM(String path, String envFile) {
 		if (CRIUSupport.isCRIUSupportEnabled()) {
-			new CRIUSupport(Paths.get(path))
-					.setLeaveRunning(false)
-					.setShellJob(true)
-					.setFileLocks(true)
-					.setLogLevel(4)
-					.setLogFile("logs")
-					.registerPreSnapshotHook(()->System.out.println("Pre checkpoint hook!"))
-					.registerPostRestoreHook(()->System.out.println("Post restore hook!"))
-					.checkpointJVM();
+			CRIUSupport criuSupport = new CRIUSupport(Paths.get(path));
+
+			criuSupport = criuSupport.setLeaveRunning(false).setShellJob(true).setFileLocks(true).setLogLevel(4)
+					.setLogFile("logs");
+
+			if (envFile != null) {
+				criuSupport = criuSupport.registerRestoreEnvFile(Paths.get(envFile));
+			}
+			criuSupport.checkpointJVM();
 		} else {
 			System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
+			if (Boolean.getBoolean("useCRIUNativesLib")) {
+				System.err.println("Using CRIU natives libary instead");
+				new CRIUNatives(Paths.get(path)).setLeaveRunning(false).setShellJob(true).setFileLocks(true)
+						.setLogLevel(4).setLogFile("logs").criuDump();
+			}
 		}
-
 	}
 }

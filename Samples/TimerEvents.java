@@ -22,17 +22,16 @@ import java.util.TimerTask;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
-import org.eclipse.openj9.criu.CRIUSupport;
 
 public class TimerEvents {
 	public static final long SECOND = 1000000000;
 	public static final long SECOND_IN_MILLIS = 1000;
 	public static final long TEN_SECONDS = 10 * SECOND;
 	public static final long FIVE_SECONDS = 5 * SECOND;
-	
+
 	public static void main(String args[]) throws Throwable {
 		System.out.println("Start 10 event timers");
-		
+
 		final long start = System.nanoTime();
 		boolean checkpointTaken = false;
 		for (int i = 0; i < 10; i++) {
@@ -44,23 +43,7 @@ public class TimerEvents {
 			}, 0, 10 * SECOND_IN_MILLIS);
 			Thread.sleep(SECOND_IN_MILLIS);
 		}
-		//uncomment the line below
-		//checkPointJVM("checkpointData");
-		
-	}
-
-	public static void checkPointJVM(String path) {
-		if (CRIUSupport.isCRIUSupportEnabled()) {
-			new CRIUSupport(Paths.get(path))
-					.setLeaveRunning(false)
-					.setShellJob(true)
-					.setFileLocks(true)
-					.setLogLevel(4)
-					.setLogFile("logs")
-					.checkpointJVM();
-		} else {
-			System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
-		}
-
+		// uncomment the line below
+		//Utils.checkPointJVM("checkpointData");
 	}
 }

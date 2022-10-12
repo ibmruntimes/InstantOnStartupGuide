@@ -21,7 +21,6 @@ import java.util.Random;
 import java.io.PrintStream;
 import java.io.File;
 import java.io.*;
-import org.eclipse.openj9.criu.CRIUSupport;
 
 public class RandomValues {
 	
@@ -31,27 +30,12 @@ public class RandomValues {
 		System.out.println("random val: " + rand.nextInt());
 		
 		//uncomment the line below
-		//checkPointJVM("checkpointData");
+		//Utils.checkPointJVM("checkpointData");
 
 		System.out.println("random val: " + rand.nextInt());
 		System.out.println("random val: " + rand.nextInt());
 		System.out.println("random val: " + rand.nextInt());
 		System.out.println("random val: " + rand.nextInt());
 		System.out.println("random val: " + rand.nextInt());
-	}
-
-	public static void checkPointJVM(String path) {
-		if (CRIUSupport.isCRIUSupportEnabled()) {
-			new CRIUSupport(Paths.get(path))
-					.setLeaveRunning(false)
-					.setShellJob(true)
-					.setFileLocks(true)
-					.setLogLevel(4)
-					.setLogFile("logs")
-					.checkpointJVM();
-		} else {
-			System.err.println("CRIU is not enabled: " + CRIUSupport.getErrorMessage());
-		}
-
 	}
 }

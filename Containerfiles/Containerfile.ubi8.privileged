@@ -36,6 +36,7 @@ RUN for dir in lib lib64 lib/x86_64-linux-gnu ; do echo /usr/local/$dir ; done >
 # Get Semeru InstantOn
 RUN cd / \
  && mkdir -p /instantOnDemo/Scripts \
+ && mkdir /instantOnDemo/CRIUNatives \
  && chown -R 1001:0 /instantOnDemo \
  && cd instantOnDemo \
  && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.5%2B2_august_22-preview_3/ibm-semeru-open-ea-jdk_x64_linux_17.0.5_2_august_22-preview_3.tar.gz \
@@ -51,4 +52,5 @@ WORKDIR /instantOnDemo
 COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Scripts/privileged/* /instantOnDemo/Scripts/
 COPY --chown=1001:0 Samples/* /instantOnDemo/
+COPY --chown=1001:0 CRIUNatives/* /instantOnDemo/CRIUNatives/
 RUN chmod a+rx /instantOnDemo/Scripts/*
