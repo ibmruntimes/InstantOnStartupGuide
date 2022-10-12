@@ -1,0 +1,17 @@
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: nativeimage-spring-demo
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: nativeimage-spring-demo
+    spec:
+      containers:
+      - image: <TAG>
+        imagePullPolicy: IfNotPresent
+        name: app
+        ports:
+        - containerPort: 9080
