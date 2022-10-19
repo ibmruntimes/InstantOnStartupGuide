@@ -1,0 +1,17 @@
+apiVersion:  v1
+kind:  ConfigMap
+metadata:
+  name:  config-features
+  namespace:  knative-serving
+data:
+  kubernetes.podspec-securitycontext: "enabled"
+  kubernetes.containerspec-addcapabilities: "enabled"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-autoscaler
+  namespace: knative-serving
+data:
+  scale-to-zero-grace-period: "10s"
+  stable-window: "6s"
