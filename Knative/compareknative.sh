@@ -46,5 +46,11 @@ do
   ./invokeinstanton.sh
   wait_until_scaled_to_zero
 
+  echo ""
+  echo ""
+  echo "Invoking InstantOn on OL"
+  ./invokeinstanton-ol.sh
+  wait_until_scaled_to_zero
+
 done
 

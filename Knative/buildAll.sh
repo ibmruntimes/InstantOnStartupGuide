@@ -14,4 +14,8 @@ cd instanton
 ./build.sh
 cd ..
 
+cd instanton-ol
+./build.sh
+cd ..
+
 cd ..
