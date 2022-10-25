@@ -1,0 +1,27 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: instanton-ol-spring-demo-restorerun
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: instanton-ol-spring-demo-restorerun
+    spec:
+      containers:
+      - image: <TAG>
+        imagePullPolicy: IfNotPresent
+        name: app
+        env:
+        - name: CRIU_EXTRA_ARGS
+          value: "--skip-file-rwx-check"
+        ports:
+        - containerPort: 9080
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+            - SYS_PTRACE
+            - CHECKPOINT_RESTORE
+            drop:
+            - ALL
