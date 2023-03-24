@@ -39,7 +39,7 @@ RUN cd / \
  && mkdir /instantOnDemo/CRIUNatives \
  && chown -R 1001:0 /instantOnDemo \
  && cd instantOnDemo \
- && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.5%2B2_august_22-preview_3/ibm-semeru-open-ea-jdk_x64_linux_17.0.5_2_august_22-preview_3.tar.gz \
+ && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.6%2B10_march_23-preview_1/ibm-semeru-open-jdk_x64_linux_17.0.6_10_March_23-preview_1.tar.gz \
  && tar -xzf semeruInstantOn.tar.gz \
  && mv jdk-17.0.5+2 semeruInstantOn \
  && rm -rf semeruInstantOn.tar.gz
