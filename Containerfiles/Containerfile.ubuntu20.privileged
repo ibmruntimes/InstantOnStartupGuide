@@ -126,8 +126,8 @@ RUN cd / \
  && chown -R 1001:0 /instantOnDemo \
  && cd instantOnDemo \
  && wget --progress=dot:mega -O semeruInstantOn.tar.gz https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.6%2B10_march_23-preview_1/ibm-semeru-open-jdk_x64_linux_17.0.6_10_March_23-preview_1.tar.gz \
- && tar -xzf semeruInstantOn.tar.gz \
- && mv jdk-17.0.5+2 semeruInstantOn \
+ && mkdir semeruInstantOn \
+ && tar -xzf semeruInstantOn.tar.gz -C semeruInstantOn --strip-components 1\
  && rm -rf semeruInstantOn.tar.gz
 
 ENV JAVA_HOME=/instantOnDemo/semeruInstantOn
