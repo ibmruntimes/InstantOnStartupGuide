@@ -1,0 +1,68 @@
+###############################################################################
+# Copyright 2023, IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+FROM icr.io/appcafe/ibm-semeru-runtimes:open-17-jdk-ubi
+
+USER 0
+
+# Install dumb-init
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "${ARCH}" in \
+       aarch64|arm64) \
+         DUMB_INIT_URL='https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_aarch64'; \
+         DUMB_INIT_SHA256=b7d648f97154a99c539b63c55979cd29f005f88430fb383007fe3458340b795e; \
+         ;; \
+       amd64|x86_64) \
+         DUMB_INIT_URL='https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64'; \
+         DUMB_INIT_SHA256=e874b55f3279ca41415d290c512a7ba9d08f98041b28ae7c2acb19a545f1c4df; \
+         ;; \
+       ppc64el|ppc64le) \
+         DUMB_INIT_URL='https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_ppc64le'; \
+         DUMB_INIT_SHA256=3d15e80e29f0f4fa1fc686b00613a2220bc37e83a35283d4b4cca1fbd0a5609f; \
+         ;; \
+       s390x) \
+         DUMB_INIT_URL='https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_s390x'; \
+         DUMB_INIT_SHA256=47e4601b152fc6dcb1891e66c30ecc62a2939fd7ffd1515a7c30f281cfec53b7; \
+         ;;\
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
+    curl -LfsSo /usr/bin/dumb-init ${DUMB_INIT_URL}; \
+    echo "${DUMB_INIT_SHA256} */usr/bin/dumb-init" | sha256sum -c -; \
+    chmod +x /usr/bin/dumb-init;
+
+WORKDIR /instantOnDemo
+
+COPY --chown=1001:0 Scripts/common/* /instantOnDemo/Scripts/
+COPY --chown=1001:0 Scripts/unprivileged/* /instantOnDemo/Scripts/
+COPY --chown=1001:0 Samples/* /instantOnDemo/
+COPY --chown=1001:0 CRIUNatives/* /instantOnDemo/CRIUNatives/
+RUN chmod a+rx /instantOnDemo/Scripts/*
+
+USER 1001
+
+# Create the checkpoint
+RUN cd /instantOnDemo \
+ && sed -i 's/\/\/checkPointJVM("checkpointData");/checkPointJVM("checkpointData");/g' HelloInstantOn.java \
+ && sed -i 's/.setLogFile("logs")/.setLogFile("logs").setUnprivileged(true)/g' HelloInstantOn.java \
+ && javac HelloInstantOn.java
+
+CMD [ "/bin/bash" ]
+ENTRYPOINT ["./Scripts/entry-point-rh9.sh"]
+
